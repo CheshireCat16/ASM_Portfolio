@@ -165,6 +165,7 @@ ReadVal		PROC
 	; Set up stack base pointer and preseve modified registers
 	LOCAL		inputString:	DWORD			; Offest of location for read in string on stack
 	LOCAL		finalMult:		SDWORD			; Multiplier to make value positive or negative
+	LOCAL		maxBytes:		DWORD			; Max bytes to read for valid input
 	PUSH		EDI
 	PUSH		EDX
 	PUSH		ESI
@@ -176,8 +177,9 @@ ReadVal		PROC
 	SUB			ESP, [EBP + 12]
 	MOV			inputString, ESP
 
-	; Default to a multiplier of 1 (positive
+	; Default to a multiplier of 1 (positive) and max bytes without a sign
 	MOV			finalMult, 1
+	MOV			maxBytes, 10
 
 	; Make sure the passed SDWORD variable is empty
 	MOV			EBX, 0
@@ -194,7 +196,7 @@ _startAgain:
 
 	; Load the first value
 	MOV			ESI, inputString
-	XOR			EAX, EAX			; Clears EAX
+	XOR			EAX, EAX			; Clears EAX before writing a byte
 	LODSB
 
 	; Check if the first value in the string is a +
@@ -202,15 +204,25 @@ _startAgain:
 	JNE			_notPlus
 	LODSB
 	DEC			ECX
-	JMP			_mainLoop
+	INC			maxBytes			; One valid byte is taken up by the sign
+	JMP			_checkLength
 	
 	; Check if the first value in the string is a - and set to finalMult to -1 to make value negative at end
 _notPlus:
 	CMP			EAX, 45
-	JNE			_mainLoop
+	JNE			_checkLength
 	MOV			finalMult, -1
+	INC			maxBytes			; One valid byte is taken up by the sign
 	LODSB
 	DEC			ECX
+
+	; Check that the input string was not too long
+_checkLength:
+	PUSH		EAX
+	MOV			EAX, [EBP + 8]
+	CMP			EAX, maxBytes
+	POP			EAX
+	JG			_invalid
 
 	; Loop through all input values, validating each one
 _mainLoop:
