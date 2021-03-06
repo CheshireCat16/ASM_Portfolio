@@ -1,14 +1,18 @@
-Microsoft (R) Macro Assembler Version 14.28.29335.0	    01/05/21 21:48:59
-#VS Setup Check     (SetupCheck.asm			     Page 1 - 1
+Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
+<Project 6 - String Primitives and Macros Parameters     (Pr  Page 1 - 1
 
 
-				TITLE VS Setup Check     (SetupCheck.asm)
+				TITLE Project 6 - String Primitives and Macros Parameters     (Proj6_cheshirj.asm)
 
-				; Author: 	John Cheshire
-				; Last Modified:	January 5, 2021
+				; Author: John Cheshire
+				; Last Modified: March 6, 2021
+				; OSU email address: cheshirj@oregonstate.edu
 				; Course number/section:   CS271 Section 401
-				; Description: This file is provided to enable you to verify your
-				;              VS Install is running properly.
+				; Project Number: 6                Due Date: March 14, 2021
+				; Description:	This program reads in 10 integers as strings, converts the strings to SDWORDS,
+				;				displays the numbers, calculates the average, and calculates the sum of the numbers.
+				;				It then reads in 10 floats as strings, converts them to floating point numbers,
+				;				displays the numbers, calculates the average, and calculates the sum of the numbers.
 
 				INCLUDE Irvine32.inc
 			      C ; Include file for Irvine32.lib             (Irvine32.inc)
@@ -108,74 +112,349 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    01/05/21 21:48:59
 			      C .LIST
 			      C 
 
+				;--------------------------------------------------------------------------------------------------------------
+				; Name: 
+				;
+				; Description: 
+				;
+				; Preconditions:
+				;
+				; Postconditions: 
+				;
+				; Receives:
+				;			[EBP + 8]	=	
+				;
+				; Returns: Nothing
+				;
+				;--------------------------------------------------------------------------------------------------------------
+				mGetString		MACRO	prompt, inputLocation, strMax, charRead
+					; Move changed registers onto the stack
+					PUSH		EAX
+					PUSH		ECX
+					PUSH		EDX
+
+					; Display the promopt
+					MOV			EDX, prompt
+					CALL		WriteString
+
+					; Read in the user's input
+					MOV			EDX, inputLocation
+					MOV			ECX, strMax
+					CALL		ReadString
+
+					; Record number of bytes read
+					MOV			[charRead], EAX
+
+					; Restores the modified registers
+					POP			EDX
+					POP			ECX
+					POP			EAX
+				ENDM
+
+				;--------------------------------------------------------------------------------------------------------------
+				; Name: 
+				;
+				; Description: 
+				;
+				; Preconditions:
+				;
+				; Postconditions: 
+				;
+				; Receives:
+				;			[EBP + 8]	=	
+				;
+				; Returns: Nothing
+				;
+				;--------------------------------------------------------------------------------------------------------------
+				mDisplayString		MACRO	displayStr
+					; Move changed registers onto the stack
+					PUSH		EDX
+
+					; Display the string
+					MOV			EDX, displayStr
+					CALL		WriteString
+
+					; Restores the modified registers
+					POP			EDX
+				ENDM
+
+				; Constants
+ = 0000000C				SDWORD_LENGTH	= 12				; Number of digits in an SDWORD type plus space for null and sign
+ = 00000032				REAL4_LENGTH	= 50				; Max digits and decimal point in REAL4 (1.4E-45) plus space for null and sign
+
  00000000			.data
- 00000000 57 65 6C 63 6F	Greeting		BYTE	"Welcome to the VS Setup Checker! We'll run a few things" 
-	   6D 65 20 74 6F
-	   20 74 68 65 20
-	   56 53 20 53 65
-	   74 75 70 20 43
-	   68 65 63 6B 65
-	   72 21 20 57 65
-	   27 6C 6C 20 72
-	   75 6E 20 61 20
-	   66 65 77 20 74
-	   68 69 6E 67 73
- 00000037  20 74 6F 20 6D					BYTE	" to make sure everything works.",13,10,0
-	   61 6B 65 20 73
-	   75 72 65 20 65
-	   76 65 72 79 74
-	   68 69 6E 67 20
-	   77 6F 72 6B 73
-	   2E 0D 0A 00
- 00000059 50 6C 65 61 73	Prompt1		BYTE	"Please enter a number in the range 1...1000000: ",0
+ 00000000 50 72 6F 6A 65		intro				BYTE	"Project 6 - String Primitives and Macros -- by John Cheshire",13,10,13,10,0
+	   63 74 20 36 20
+	   2D 20 53 74 72
+	   69 6E 67 20 50
+	   72 69 6D 69 74
+	   69 76 65 73 20
+	   61 6E 64 20 4D
+	   61 63 72 6F 73
+	   20 2D 2D 20 62
+	   79 20 4A 6F 68
+	   6E 20 43 68 65
+	   73 68 69 72 65
+	   0D 0A 0D 0A 00
+ 00000041 2A 2A 45 43 3A		extraCredit			BYTE	"**EC: Each line asking for input is numbered",13,10,"and the running total sum is displayed",13,10
+	   20 45 61 63 68
+	   20 6C 69 6E 65
+	   20 61 73 6B 69
+	   6E 67 20 66 6F
+	   72 20 69 6E 70
+	   75 74 20 69 73
+	   20 6E 75 6D 62
+	   65 72 65 64 0D
+	   0A 61 6E 64 20
+	   74 68 65 20 72
+	   75 6E 6E 69 6E
+	   67 20 74 6F 74
+	   61 6C 20 73 75
+	   6D 20 69 73 20
+	   64 69 73 70 6C
+	   61 79 65 64 0D
+	   0A
+ 00000097  2A 2A 45 43 3A							BYTE	"**EC: ReadFloatVal and WriteFloatVal are implemented,",13,10,"to handle floating point numbers",13,10,13,10,0
+	   20 52 65 61 64
+	   46 6C 6F 61 74
+	   56 61 6C 20 61
+	   6E 64 20 57 72
+	   69 74 65 46 6C
+	   6F 61 74 56 61
+	   6C 20 61 72 65
+	   20 69 6D 70 6C
+	   65 6D 65 6E 74
+	   65 64 2C 0D 0A
+	   74 6F 20 68 61
+	   6E 64 6C 65 20
+	   66 6C 6F 61 74
+	   69 6E 67 20 70
+	   6F 69 6E 74 20
+	   6E 75 6D 62 65
+	   72 73 0D 0A 0D
+	   0A 00
+ 000000F3 50 6C 65 61 73		instructionsInt		BYTE	"Please enter ten signed decimal integers.",13,10
+	   65 20 65 6E 74
+	   65 72 20 74 65
+	   6E 20 73 69 67
+	   6E 65 64 20 64
+	   65 63 69 6D 61
+	   6C 20 69 6E 74
+	   65 67 65 72 73
+	   2E 0D 0A
+ 0000011E  4E 75 6D 62 65							BYTE	"Numbers must be between 2,147,483,647 and -2,147,483,648 (inclusive).",13,10
+	   72 73 20 6D 75
+	   73 74 20 62 65
+	   20 62 65 74 77
+	   65 65 6E 20 32
+	   2C 31 34 37 2C
+	   34 38 33 2C 36
+	   34 37 20 61 6E
+	   64 20 2D 32 2C
+	   31 34 37 2C 34
+	   38 33 2C 36 34
+	   38 20 28 69 6E
+	   63 6C 75 73 69
+	   76 65 29 2E 0D
+	   0A
+ 00000165  41 64 64 69 74							BYTE	"Additionally, the sum of the numbers must also be between those numbers.",13,10,13,10
+	   69 6F 6E 61 6C
+	   6C 79 2C 20 74
+	   68 65 20 73 75
+	   6D 20 6F 66 20
+	   74 68 65 20 6E
+	   75 6D 62 65 72
+	   73 20 6D 75 73
+	   74 20 61 6C 73
+	   6F 20 62 65 20
+	   62 65 74 77 65
+	   65 6E 20 74 68
+	   6F 73 65 20 6E
+	   75 6D 62 65 72
+	   73 2E 0D 0A 0D
+	   0A
+ 000001B1  54 68 65 20 70							BYTE	"The program will display the numbers, their sum, and their average.",13,10,13,10,0
+	   72 6F 67 72 61
+	   6D 20 77 69 6C
+	   6C 20 64 69 73
+	   70 6C 61 79 20
+	   74 68 65 20 6E
+	   75 6D 62 65 72
+	   73 2C 20 74 68
+	   65 69 72 20 73
+	   75 6D 2C 20 61
+	   6E 64 20 74 68
+	   65 69 72 20 61
+	   76 65 72 61 67
+	   65 2E 0D 0A 0D
+	   0A 00
+ 000001F9  0000000C [			sdwordString		BYTE	SDWORD_LENGTH DUP(0)
+	    00
+	   ]
+ 00000205  00000032 [			real4String			BYTE	REAL4_LENGTH DUP(0)
+	    00
+	   ]
+ 00000237 00000000			bytesRead			DWORD	0
+ 0000023B 00000000			readValueInt		SDWORD	0
+ 0000023F 00000000			readValueFloat		REAL4	0.0
+ 00000243 50 6C 65 61 73		enterPromptInt		BYTE	"Please enter a signed interger: ",0
 	   65 20 65 6E 74
 	   65 72 20 61 20
+	   73 69 67 6E 65
+	   64 20 69 6E 74
+	   65 72 67 65 72
+	   3A 20 00
+ 00000264 50 6C 65 61 73		enterPromptReal		BYTE	"Please enter a floating point number: ",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   66 6C 6F 61 74
+	   69 6E 67 20 70
+	   6F 69 6E 74 20
 	   6E 75 6D 62 65
-	   72 20 69 6E 20
-	   74 68 65 20 72
-	   61 6E 67 65 20
-	   31 2E 2E 2E 31
-	   30 30 30 30 30
-	   30 3A 20 00
- 0000008A 48 65 72 65 27	Out1			BYTE	"Here's your value. Thanks for playing: ",0
-	   73 20 79 6F 75
-	   72 20 76 61 6C
-	   75 65 2E 20 54
-	   68 61 6E 6B 73
-	   20 66 6F 72 20
-	   70 6C 61 79 69
-	   6E 67 3A 20 00
- 000000B2 00000000		uVal1			DWORD	0
+	   72 3A 20 00
+ 0000028B 59 6F 75 20 64		errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
+	   69 64 6E 27 74
+	   20 65 6E 74 65
+	   72 20 61 20 6E
+	   75 6D 62 65 72
+	   20 69 6E 20 74
+	   68 65 20 70 72
+	   6F 70 65 72 20
+	   66 6F 72 6D 61
+	   74 20 6F 72 20
+	   69 74 20 77 61
+	   73 20 74 6F 6F
+	   20 6C 61 72 67
+	   65 21 0D 0A
+ 000002D0  50 6C 65 61 73							BYTE	"Please try again: ",0
+	   65 20 74 72 79
+	   20 61 67 61 69
+	   6E 3A 20 00
+ 000002E3 59 6F 75 20 65		textEnterVals		BYTE	"You entered these numbers:",13,10,0
+	   6E 74 65 72 65
+	   64 20 74 68 65
+	   73 65 20 6E 75
+	   6D 62 65 72 73
+	   3A 0D 0A 00
+ 00000300 54 68 65 20 73		textSum				BYTE	"The sum of the values is: ",0
+	   75 6D 20 6F 66
+	   20 74 68 65 20
+	   76 61 6C 75 65
+	   73 20 69 73 3A
+	   20 00
+ 0000031B 54 68 65 20 61		textAvg				BYTE	"The average of the values is: ",0
+	   76 65 72 61 67
+	   65 20 6F 66 20
+	   74 68 65 20 76
+	   61 6C 75 65 73
+	   20 69 73 3A 20
+	   00
+ 0000033A 54 68 61 6E 6B		goodBye				BYTE	"Thanks for trying the program, have a great day!!",13,10,0
+	   73 20 66 6F 72
+	   20 74 72 79 69
+	   6E 67 20 74 68
+	   65 20 70 72 6F
+	   67 72 61 6D 2C
+	   20 68 61 76 65
+	   20 61 20 67 72
+	   65 61 74 20 64
+	   61 79 21 21 0D
+	   0A 00
 
 
  00000000			.code
- 00000000			main PROC
- 00000000  BA 00000000 R		MOV	EDX, OFFSET Greeting
- 00000005  E8 00000000 E		Call	WriteString
- 0000000A  E8 00000000 E		Call	CrLf
- 0000000F  BA 00000059 R		MOV	EDX, OFFSET Prompt1
- 00000014  E8 00000000 E		Call	WriteString
- 00000019  E8 00000000 E		Call	ReadDec
- 0000001E  A3 000000B2 R		MOV	uVal1, EAX
- 00000023  E8 00000000 E		Call	CrLf
- 00000028  BA 0000008A R		MOV	EDX, OFFSET Out1
- 0000002D  E8 00000000 E		Call	WriteString
- 00000032  A1 000000B2 R		MOV	EAX, uVal1
- 00000037  E8 00000000 E		Call	WriteDec
- 0000003C  E8 00000000 E		Call	CrLf
- 00000041  E8 00000000 E		Call	CrLf
+ 00000000			main				PROC
+					
+					; Display the program introduction
+ 00000000  BA 00000000 R		MOV		EDX, OFFSET intro
+ 00000005  E8 00000000 E		CALL	WriteString
 
-					Invoke ExitProcess,0	; exit to operating system
- 00000046  6A 00	   *	    push   +000000000h
- 00000048  E8 00000000 E   *	    call   ExitProcess
- 0000004D			main ENDP
+					; Display extra credit lines
+ 0000000A  BA 00000041 R		MOV		EDX, OFFSET extraCredit
+ 0000000F  E8 00000000 E		CALL	WriteString
 
+					; Test getting a string
+					mGetString OFFSET enterPromptInt, OFFSET sdwordString, SDWORD_LENGTH, OFFSET bytesRead
+ 00000014  50		     1		PUSH		EAX
+ 00000015  51		     1		PUSH		ECX
+ 00000016  52		     1		PUSH		EDX
+ 00000017  BA 00000243 R     1		MOV			EDX, OFFSET enterPromptInt
+ 0000001C  E8 00000000 E     1		CALL		WriteString
+ 00000021  BA 000001F9 R     1		MOV			EDX, OFFSET sdwordString
+ 00000026  B9 0000000C	     1		MOV			ECX, SDWORD_LENGTH
+ 0000002B  E8 00000000 E     1		CALL		ReadString
+ 00000030  A3 00000237 R     1		MOV			[OFFSET bytesRead], EAX
+ 00000035  5A		     1		POP			EDX
+ 00000036  59		     1		POP			ECX
+ 00000037  58		     1		POP			EAX
+
+					; Test writing a string
+					mDisplayString OFFSET sdwordString
+ 00000038  52		     1		PUSH		EDX
+ 00000039  BA 000001F9 R     1		MOV			EDX, OFFSET sdwordString
+ 0000003E  E8 00000000 E     1		CALL		WriteString
+ 00000043  5A		     1		POP			EDX
+
+					Invoke ExitProcess, 0				; exit to operating system
+ 00000044  6A 00	   *	    push   +000000000h
+ 00000046  E8 00000000 E   *	    call   ExitProcess
+ 0000004B			main				ENDP
+
+
+				;--------------------------------------------------------------------------------------------------------------
+				; Name: 
+				;
+				; Description: 
+				;
+				; Preconditions:
+				;
+				; Postconditions: 
+				;
+				; Receives:
+				;			[EBP + 8]	=	
+				;
+				; Returns: Nothing
+				;
+				;--------------------------------------------------------------------------------------------------------------
+ 0000004B			ReadVal		PROC
+
+ 0000004B  C3				RET
+ 0000004C			ReadVal		ENDP
+
+
+				;--------------------------------------------------------------------------------------------------------------
+				; Name: 
+				;
+				; Description: 
+				;
+				; Preconditions:
+				;
+				; Postconditions: 
+				;
+				; Receives:
+				;			[EBP + 8]	=	
+				;
+				; Returns: Nothing
+				;
+				;--------------------------------------------------------------------------------------------------------------
+ 0000004C			WriteVal		PROC
+
+ 0000004C  C3				RET
+ 0000004D			WriteVal		ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 14.28.29335.0	    01/05/21 21:48:59
-#VS Setup Check     (SetupCheck.asm			     Symbols 2 - 1
+Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
+<Project 6 - String Primitives and Macros Parameters     (Pr  Symbols 2 - 1
 
 
+
+
+Macros:
+
+                N a m e                 Type
+
+mDisplayString . . . . . . . . .	Proc
+mGetString . . . . . . . . . . .	Proc
 
 
 Structures and Unions:
@@ -266,7 +545,7 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 000000B6 Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000036E Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 0000004D Para	  Public  'CODE'	
 
 
@@ -337,6 +616,7 @@ ReadInt  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 ReadKeyFlush . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadKey  . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 ReadString . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+ReadVal  . . . . . . . . . . . .	P Near	 0000004B _TEXT	Length= 00000001 Public STDCALL
 SetConsoleCursorInfo . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleCursorPosition . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 SetConsoleMode . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
@@ -373,8 +653,9 @@ WriteStackFrameName  . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External
 WriteStackFrame  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteString  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
 WriteToFile  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+WriteVal . . . . . . . . . . . .	P Near	 0000004C _TEXT	Length= 00000001 Public STDCALL
 WriteWindowsMsg  . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
-main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000004D Public STDCALL
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000004B Public STDCALL
 printf . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 scanf  . . . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
 wsprintfA  . . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External C
@@ -442,7 +723,6 @@ GENERIC_EXECUTE  . . . . . . . .	Number	 20000000h
 GENERIC_READ . . . . . . . . . .	Number	 -80000000h   
 GENERIC_WRITE  . . . . . . . . .	Number	 40000000h   
 GetCommandLine . . . . . . . . .	Text   	 GetCommandLineA
-Greeting . . . . . . . . . . . .	Byte	 00000000 _DATA	
 HANDLE . . . . . . . . . . . . .	Text   	 DWORD
 HEAP_GENERATE_EXCEPTIONS . . . .	Number	 00000004h   
 HEAP_GROWABLE  . . . . . . . . .	Number	 00000002h   
@@ -498,14 +778,14 @@ NULL . . . . . . . . . . . . . .	Number	 00000000h
 NUMLOCK_ON . . . . . . . . . . .	Number	 00000020h   
 OPEN_ALWAYS  . . . . . . . . . .	Number	 00000004h   
 OPEN_EXISTING  . . . . . . . . .	Number	 00000003h   
-Out1 . . . . . . . . . . . . . .	Byte	 0000008A _DATA	
 PeekConsoleInput . . . . . . . .	Text   	 PeekConsoleInputA
-Prompt1  . . . . . . . . . . . .	Byte	 00000059 _DATA	
+REAL4_LENGTH . . . . . . . . . .	Number	 00000032h   
 RIGHT_ALT_PRESSED  . . . . . . .	Number	 00000001h   
 RIGHT_CTRL_PRESSED . . . . . . .	Number	 00000004h   
 ReadConsoleInput . . . . . . . .	Text   	 ReadConsoleInputA
 ReadConsole  . . . . . . . . . .	Text   	 ReadConsoleA
 SCROLLLOCK_ON  . . . . . . . . .	Number	 00000040h   
+SDWORD_LENGTH  . . . . . . . . .	Number	 0000000Ch   
 SHIFT_MASK . . . . . . . . . . .	Number	 00000010h   
 SHIFT_PRESSED  . . . . . . . . .	Number	 00000010h   
 STD_ERROR_HANDLE . . . . . . . .	Number	 -0000000Ch   
@@ -597,10 +877,18 @@ WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
+bytesRead  . . . . . . . . . . .	DWord	 00000237 _DATA	
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
+enterPromptInt . . . . . . . . .	Byte	 00000243 _DATA	
+enterPromptReal  . . . . . . . .	Byte	 00000264 _DATA	
+errorPrompt  . . . . . . . . . .	Byte	 0000028B _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
+extraCredit  . . . . . . . . . .	Byte	 00000041 _DATA	
+goodBye  . . . . . . . . . . . .	Byte	 0000033A _DATA	
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
+instructionsInt  . . . . . . . .	Byte	 000000F3 _DATA	
+intro  . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
 lightGray  . . . . . . . . . . .	Number	 00000007h   
@@ -608,8 +896,14 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
+readValueFloat . . . . . . . . .	DWord	 0000023F _DATA	
+readValueInt . . . . . . . . . .	DWord	 0000023B _DATA	
+real4String  . . . . . . . . . .	Byte	 00000205 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-uVal1  . . . . . . . . . . . . .	DWord	 000000B2 _DATA	
+sdwordString . . . . . . . . . .	Byte	 000001F9 _DATA	
+textAvg  . . . . . . . . . . . .	Byte	 0000031B _DATA	
+textEnterVals  . . . . . . . . .	Byte	 000002E3 _DATA	
+textSum  . . . . . . . . . . . .	Byte	 00000300 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   

@@ -27,8 +27,28 @@ INCLUDE Irvine32.inc
 ; Returns: Nothing
 ;
 ;--------------------------------------------------------------------------------------------------------------
-mGetString		MACRO	prompt, inputLocation, strMax
-	
+mGetString		MACRO	prompt, inputLocation, strMax, charRead
+	; Move changed registers onto the stack
+	PUSH		EAX
+	PUSH		ECX
+	PUSH		EDX
+
+	; Display the promopt
+	MOV			EDX, prompt
+	CALL		WriteString
+
+	; Read in the user's input
+	MOV			EDX, inputLocation
+	MOV			ECX, strMax
+	CALL		ReadString
+
+	; Record number of bytes read
+	MOV			[charRead], EAX
+
+	; Restores the modified registers
+	POP			EDX
+	POP			ECX
+	POP			EAX
 ENDM
 
 ;--------------------------------------------------------------------------------------------------------------
@@ -47,12 +67,21 @@ ENDM
 ;
 ;--------------------------------------------------------------------------------------------------------------
 mDisplayString		MACRO	displayStr
-	
+	; Move changed registers onto the stack
+	PUSH		EDX
+
+	; Display the string
+	MOV			EDX, displayStr
+	CALL		WriteString
+
+	; Restores the modified registers
+	POP			EDX
 ENDM
 
 ; Constants
-	SDWORD_LENGTH	= 12				; Number of digits in an SDWORD type plus space for null and sign
-	REAL4_LENGTH	= 50				; Max digits and decimal point in REAL4 (1.4E-45) plus space for null and sign
+	SDWORD_LENGTH	= 11				; Number of digits in an SDWORD type plus space for sign
+	REAL4_LENGTH	= 49				; Max digits and decimal point in REAL4 (1.4E-45) plus space for sign
+	MAX_READ		= REAL4_LENGTH + 2  ; Max number of digits to read, gives space for null and extra for detecting long input
 
 .data
 	intro				BYTE	"Project 6 - String Primitives and Macros -- by John Cheshire",13,10,13,10,0
@@ -62,8 +91,8 @@ ENDM
 						BYTE	"Numbers must be between 2,147,483,647 and -2,147,483,648 (inclusive).",13,10
 						BYTE	"Additionally, the sum of the numbers must also be between those numbers.",13,10,13,10
 						BYTE	"The program will display the numbers, their sum, and their average.",13,10,13,10,0
-	sdwordString		BYTE	SDWORD_LENGTH DUP(0)
-	real4String			BYTE	REAL4_LENGTH DUP(0)
+	sdwordString		BYTE	MAX_READ DUP(0)
+	real4String			BYTE	MAX_READ DUP(0)
 	bytesRead			DWORD	0
 	readValueInt		SDWORD	0
 	readValueFloat		REAL4	0.0
@@ -87,7 +116,12 @@ main				PROC
 	; Display extra credit lines
 	MOV		EDX, OFFSET extraCredit
 	CALL	WriteString
-	
+
+	; Test getting a string
+	mGetString OFFSET enterPromptInt, OFFSET sdwordString, MAX_READ, OFFSET bytesRead
+
+	; Test writing a string
+	mDisplayString OFFSET sdwordString
 
 	Invoke ExitProcess, 0				; exit to operating system
 main				ENDP
@@ -108,5 +142,30 @@ main				ENDP
 ; Returns: Nothing
 ;
 ;--------------------------------------------------------------------------------------------------------------
+ReadVal		PROC
+
+	RET
+ReadVal		ENDP
+
+
+;--------------------------------------------------------------------------------------------------------------
+; Name: 
+;
+; Description: 
+;
+; Preconditions:
+;
+; Postconditions: 
+;
+; Receives:
+;			[EBP + 8]	=	
+;
+; Returns: Nothing
+;
+;--------------------------------------------------------------------------------------------------------------
+WriteVal		PROC
+
+	RET
+WriteVal		ENDP
 
 END main
