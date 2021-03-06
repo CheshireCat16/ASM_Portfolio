@@ -186,6 +186,9 @@ ReadVal		PROC
 	; Prompt user and read in string
 	mGetString	[EBP + 20], inputString, [EBP + 12], [EBP + 8]
 
+	; Jump here to test new input after finding invalid input
+_startAgain:
+
 	; Set up the counter for number of values to read
 	MOV			ECX, [EBP + 8]
 
@@ -232,18 +235,31 @@ _mainLoop:
 
 	; Move to next value
 	LODSB
-
 	LOOP		_mainLoop
 
+	; Multiply by finalMult to get correct sign
 	MOV			EAX, [EBP + 24]
-	CALL		WriteDec
+	MUL			finalMult
+	MOV			[EBP + 24], EAX
+
+	; Testing write integer
+	MOV			EAX, [EBP + 24]
+	CALL		WriteInt
+
+	; Ensure the invalid logic is skipped if string successfully read in
+	JMP			_endOfProc
 
 
 
 	; Handles the case of an invalid input with a new prompt
 _invalid:
+	; Prompt user with error message and read in string
+	mGetString	[EBP + 16], inputString, [EBP + 12], [EBP + 8]
+	JMP			_startAgain
 
-
+	; Jump when procedure finishes successfully
+_endOfProc:
+	
 
 	; Restore modified registers
 	ADD			ESP, [EBP + 12]
