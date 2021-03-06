@@ -131,12 +131,15 @@ main				PROC
 	; Loop for reading in intger values
 _readInts:
 	; Put required variables for calling ReadVal on the stack and call ReadVal
-	PUSH	EDI
+	PUSH	OFFSET readValueInt
 	PUSH	OFFSET enterPromptInt
 	PUSH	OFFSET errorPrompt
 	PUSH	OFFSET MAX_READ
 	PUSH	OFFSET bytesRead
 	CALL	ReadVal
+
+	PUSH	readValueInt
+	CALL	WriteVal
 
 	Invoke ExitProcess, 0				; exit to operating system
 main				ENDP
@@ -145,11 +148,13 @@ main				ENDP
 ;--------------------------------------------------------------------------------------------------------------
 ; Name: ReadVal
 ;
-; Description: 
+; Description:	Reads in console input, validates that the input is not too long to be an SDWORD
+;				and that the input is a valid number. Also accepts +/- signs. If number is not
+;				valid, user will be prompted to try entering a number again.
 ;
 ; Preconditions:
 ;
-; Postconditions: 
+; Postconditions: Values at [EBP + 8] may be modified
 ;
 ; Receives:
 ;			[EBP + 8]	=	Number of bytes read
@@ -158,7 +163,8 @@ main				ENDP
 ;			[EBP + 20]	=	Basic prompt
 ;			[EBP + 24]	=	Adddress of variable to store SDWORD
 ;
-; Returns: Entered string as an SDWORD in [EBP + 24]
+; Returns:
+;			[EBP + 24]	=	Entered string as an SDWORD 
 ;
 ;--------------------------------------------------------------------------------------------------------------
 ReadVal		PROC
@@ -182,8 +188,9 @@ ReadVal		PROC
 	MOV			maxBytes, 10
 
 	; Make sure the passed SDWORD variable is empty
+	MOV			EDI, [EBP + 24]
 	MOV			EBX, 0
-	MOV			[EBP + 24], EBX
+	MOV			[EDI], EBX
 
 	; Prompt user and read in string
 	mGetString	[EBP + 20], inputString, [EBP + 12], [EBP + 8]
@@ -239,24 +246,20 @@ _mainLoop:
 	; Multiply [EBP + 24] by 10 and add the new value
 	MOV			EBX, 10
 	PUSH		EAX
-	MOV			EAX, [EBP + 24]
+	MOV			EAX, [EDI]
 	MUL			EBX
-	MOV			[EBP + 24], EAX
+	MOV			[EDI], EAX
 	POP			EAX
-	ADD			[EBP + 24], EAX
+	ADD			[EDI], EAX
 
 	; Move to next value
 	LODSB
 	LOOP		_mainLoop
 
 	; Multiply by finalMult to get correct sign
-	MOV			EAX, [EBP + 24]
+	MOV			EAX, [EDI]
 	MUL			finalMult
-	MOV			[EBP + 24], EAX
-
-	; Testing write integer
-	MOV			EAX, [EBP + 24]
-	CALL		WriteInt
+	MOV			[EDI], EAX
 
 	; Ensure the invalid logic is skipped if string successfully read in
 	JMP			_endOfProc
@@ -286,23 +289,95 @@ ReadVal		ENDP
 
 
 ;--------------------------------------------------------------------------------------------------------------
-; Name: 
+; Name: WriteVal
 ;
-; Description: 
+; Description: Writes out the passed SDWORD to the console
 ;
-; Preconditions:
+; Preconditions: Passed value is an SDWORD
 ;
-; Postconditions: 
+; Postconditions: None
 ;
 ; Receives:
-;			[EBP + 8]	=	
+;			[EBP + 8]	=	SDWORD to write out as a string
 ;
 ; Returns: Nothing
 ;
 ;--------------------------------------------------------------------------------------------------------------
 WriteVal		PROC
+	; Set up local variables and preseve modified registers
+	LOCAL		outputString: DWORD			; Offest of location for string to display on the stack
+	LOCAL		negativeSign: DWORD			; Tracks whether to include a negative sign at the front of the string
+	SUB			ESP, 12						; Make room for a string of up to 10 numbers, plus sign, plus null
+	MOV			outputString, ESP
+	PUSH		EAX
+	PUSH		EDI
+	PUSH		EBX
 
-	RET
+	; We'll move down the string from bottom (high mem address) to top (low mem address) so set direction flag
+	STD
+
+	; Load the end of the string into EDI and add a null
+	MOV			EBX, outputString
+	ADD			EBX, 11
+	MOV			EDI, EBX
+	XOR			EAX, EAX
+	STOSB		
+
+	;	Get the value read for reading to a string
+	MOV			EAX, [EBP +8]
+
+	; Check if it's negative
+	CMP			EAX, 0
+	JGE			_notNegative
+	
+	; Make positive and set negative flag
+	MOV			EBX, -1
+	MUL			EBX
+	MOV			negativeSign, 45			; Move in the ASCII character for a negative sign
+	JMP			_convertToString
+
+	; Jump here if the entered value was positive
+_notNegative:
+	; Set negativeSign to 0 so it will be skipped
+	MOV			negativeSign, 0
+
+	; Add values to string until all values are read
+_convertToString:
+	; Divide the current value by 10 to get the remainder
+	MOV			EBX, 10
+	XOR			EDX, EDX
+	DIV			EBX
+	;	Move the remainder into the string
+	PUSH		EAX
+	MOV			EAX, EDX
+	ADD			EAX, 48			; Add 48 to make 0 into ASCII 0
+	STOSB
+	POP			EAX
+
+	; Check if the quotient is 0, if so, that's the end of the number
+	CMP			EAX, 0
+	JNE			_convertToString
+
+	; Check if the value was negative and add negative sign if needed
+	CMP			negativeSign, 45
+	JNE			_noNegSign
+	MOV			EAX, negativeSign
+	STOSB
+
+_noNegSign:
+	; ESI should point to one higher than the output string, a
+	MOV			outputString, EDI
+	ADD			outputString, 1
+
+	; Display the string
+	mDisplayString	outputString
+	
+	; Restore modified registers and clean up manually set local variables
+	POP			EBX
+	POP			EDI
+	POP			EAX
+	ADD			ESP, 12
+	RET			4
 WriteVal		ENDP
 
 END main
