@@ -12,14 +12,52 @@ TITLE Project 6 - String Primitives and Macros Parameters     (Proj6_cheshirj.as
 
 INCLUDE Irvine32.inc
 
+;--------------------------------------------------------------------------------------------------------------
+; Name: 
+;
+; Description: 
+;
+; Preconditions:
+;
+; Postconditions: 
+;
+; Receives:
+;			[EBP + 8]	=	
+;
+; Returns: Nothing
+;
+;--------------------------------------------------------------------------------------------------------------
+mGetString		MACRO	prompt, inputLocation, strMax
+	
+ENDM
+
+;--------------------------------------------------------------------------------------------------------------
+; Name: 
+;
+; Description: 
+;
+; Preconditions:
+;
+; Postconditions: 
+;
+; Receives:
+;			[EBP + 8]	=	
+;
+; Returns: Nothing
+;
+;--------------------------------------------------------------------------------------------------------------
+mDisplayString		MACRO	displayStr
+	
+ENDM
+
 ; Constants
 	SDWORD_LENGTH	= 12				; Number of digits in an SDWORD type plus space for null and sign
 	REAL4_LENGTH	= 50				; Max digits and decimal point in REAL4 (1.4E-45) plus space for null and sign
 
 .data
 	intro				BYTE	"Project 6 - String Primitives and Macros -- by John Cheshire",13,10,13,10,0
-	extraCredit			BYTE	"**EC: Each line asking for input is numbered and the running total sum is displayed",13,10,0
-						BYTE	"**EC: ReadFloatVal and WriteFloatVal are implemented to handle floating point numbers",13,10,13,10,0
+	extraCredit			BYTE	"**EC: Each line asking for input is numbered",13,10,"and the running total sum is displayed",13,10
+						BYTE	"**EC: ReadFloatVal and WriteFloatVal are implemented,",13,10,"to handle floating point numbers",13,10,13,10,0
 	instructionsInt		BYTE	"Please enter ten signed decimal integers.",13,10
 						BYTE	"Numbers must be between 2,147,483,647 and -2,147,483,648 (inclusive).",13,10
 						BYTE	"Additionally, the sum of the numbers must also be between those numbers.",13,10,13,10
@@ -41,13 +79,19 @@ INCLUDE Irvine32.inc
 
 .code
 main				PROC
+	
+	; Display the program introduction
+	MOV		EDX, OFFSET intro
+	CALL	WriteString
 
+	; Display extra credit lines
+	MOV		EDX, OFFSET extraCredit
+	CALL	WriteString
 	
 
 	Invoke ExitProcess, 0				; exit to operating system
 main				ENDP
-	MOV		EDX, OFFSET intro
-	CALL	WriteString
+
 
 ;--------------------------------------------------------------------------------------------------------------
 ; Name: 
