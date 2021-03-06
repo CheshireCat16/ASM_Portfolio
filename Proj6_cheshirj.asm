@@ -13,21 +13,27 @@ TITLE Project 6 - String Primitives and Macros Parameters     (Proj6_cheshirj.as
 INCLUDE Irvine32.inc
 
 ;--------------------------------------------------------------------------------------------------------------
-; Name: 
+; Name: mGetString
 ;
-; Description: 
+; Description:	Shows the user a prompt and then reads in a string of up to the specified size while storing the
+;				number of bytes read in the specified variable.
 ;
 ; Preconditions:
 ;
-; Postconditions: 
+; Postconditions: None
 ;
 ; Receives:
-;			[EBP + 8]	=	
+;			prompt			= Address of string to display to user as prompt
+;			inputLocaiton	= Address of array of bytes to store read-in string
+;			strMax			= Maximun number of characters to read
+;			charRead		= Address of variable to store number of characters read
 ;
-; Returns: Nothing
+; Returns:
+;			inputLocation	= Updated with read-in string
+;			charRead		= Number of characters read from input
 ;
 ;--------------------------------------------------------------------------------------------------------------
-mGetString		MACRO	prompt, inputLocation, strMax, charRead
+mGetString		MACRO	prompt:REQ, inputLocation:REQ, strMax:REQ, charRead:REQ
 	; Move changed registers onto the stack
 	PUSH		EAX
 	PUSH		ECX
@@ -52,21 +58,21 @@ mGetString		MACRO	prompt, inputLocation, strMax, charRead
 ENDM
 
 ;--------------------------------------------------------------------------------------------------------------
-; Name: 
+; Name: mDisplayString
 ;
-; Description: 
+; Description: Displays a string to the console
 ;
-; Preconditions:
+; Preconditions: None
 ;
-; Postconditions: 
+; Postconditions: None
 ;
 ; Receives:
-;			[EBP + 8]	=	
+;			displayStr	= Address of a string to display
 ;
 ; Returns: Nothing
 ;
 ;--------------------------------------------------------------------------------------------------------------
-mDisplayString		MACRO	displayStr
+mDisplayString		MACRO	displayStr:REQ
 	; Move changed registers onto the stack
 	PUSH		EDX
 

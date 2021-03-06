@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
+Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:25:52
 <Project 6 - String Primitives and Macros Parameters     (Pr  Page 1 - 1
 
 
@@ -113,21 +113,27 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
 			      C 
 
 				;--------------------------------------------------------------------------------------------------------------
-				; Name: 
+				; Name: mGetString
 				;
-				; Description: 
+				; Description:	Shows the user a prompt and then reads in a string of up to the specified size while storing the
+				;				number of bytes read in the specified variable.
 				;
 				; Preconditions:
 				;
-				; Postconditions: 
+				; Postconditions: None
 				;
 				; Receives:
-				;			[EBP + 8]	=	
+				;			prompt			= Address of string to display to user as prompt
+				;			inputLocaiton	= Address of array of bytes to store read-in string
+				;			strMax			= Maximun number of characters to read
+				;			charRead		= Address of variable to store number of characters read
 				;
-				; Returns: Nothing
+				; Returns:
+				;			inputLocation	= Updated with read-in string
+				;			charRead		= Number of characters read from input
 				;
 				;--------------------------------------------------------------------------------------------------------------
-				mGetString		MACRO	prompt, inputLocation, strMax, charRead
+				mGetString		MACRO	prompt:REQ, inputLocation:REQ, strMax:REQ, charRead:REQ
 					; Move changed registers onto the stack
 					PUSH		EAX
 					PUSH		ECX
@@ -152,21 +158,21 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
 				ENDM
 
 				;--------------------------------------------------------------------------------------------------------------
-				; Name: 
+				; Name: mDisplayString
 				;
-				; Description: 
+				; Description: Displays a string to the console
 				;
-				; Preconditions:
+				; Preconditions: None
 				;
-				; Postconditions: 
+				; Postconditions: None
 				;
 				; Receives:
-				;			[EBP + 8]	=	
+				;			displayStr	= Address of a string to display
 				;
 				; Returns: Nothing
 				;
 				;--------------------------------------------------------------------------------------------------------------
-				mDisplayString		MACRO	displayStr
+				mDisplayString		MACRO	displayStr:REQ
 					; Move changed registers onto the stack
 					PUSH		EDX
 
@@ -179,8 +185,9 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
 				ENDM
 
 				; Constants
- = 0000000C				SDWORD_LENGTH	= 12				; Number of digits in an SDWORD type plus space for null and sign
- = 00000032				REAL4_LENGTH	= 50				; Max digits and decimal point in REAL4 (1.4E-45) plus space for null and sign
+ = 0000000B				SDWORD_LENGTH	= 11				; Number of digits in an SDWORD type plus space for sign
+ = 00000031				REAL4_LENGTH	= 49				; Max digits and decimal point in REAL4 (1.4E-45) plus space for sign
+ = 00000033				MAX_READ		= REAL4_LENGTH + 2  ; Max number of digits to read, gives space for null and extra for detecting long input
 
  00000000			.data
  00000000 50 72 6F 6A 65		intro				BYTE	"Project 6 - String Primitives and Macros -- by John Cheshire",13,10,13,10,0
@@ -288,23 +295,23 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
 	   76 65 72 61 67
 	   65 2E 0D 0A 0D
 	   0A 00
- 000001F9  0000000C [			sdwordString		BYTE	SDWORD_LENGTH DUP(0)
+ 000001F9  00000033 [			sdwordString		BYTE	MAX_READ DUP(0)
 	    00
 	   ]
- 00000205  00000032 [			real4String			BYTE	REAL4_LENGTH DUP(0)
+ 0000022C  00000033 [			real4String			BYTE	MAX_READ DUP(0)
 	    00
 	   ]
- 00000237 00000000			bytesRead			DWORD	0
- 0000023B 00000000			readValueInt		SDWORD	0
- 0000023F 00000000			readValueFloat		REAL4	0.0
- 00000243 50 6C 65 61 73		enterPromptInt		BYTE	"Please enter a signed interger: ",0
+ 0000025F 00000000			bytesRead			DWORD	0
+ 00000263 00000000			readValueInt		SDWORD	0
+ 00000267 00000000			readValueFloat		REAL4	0.0
+ 0000026B 50 6C 65 61 73		enterPromptInt		BYTE	"Please enter a signed interger: ",0
 	   65 20 65 6E 74
 	   65 72 20 61 20
 	   73 69 67 6E 65
 	   64 20 69 6E 74
 	   65 72 67 65 72
 	   3A 20 00
- 00000264 50 6C 65 61 73		enterPromptReal		BYTE	"Please enter a floating point number: ",0
+ 0000028C 50 6C 65 61 73		enterPromptReal		BYTE	"Please enter a floating point number: ",0
 	   65 20 65 6E 74
 	   65 72 20 61 20
 	   66 6C 6F 61 74
@@ -312,7 +319,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
 	   6F 69 6E 74 20
 	   6E 75 6D 62 65
 	   72 3A 20 00
- 0000028B 59 6F 75 20 64		errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
+ 000002B3 59 6F 75 20 64		errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
 	   69 64 6E 27 74
 	   20 65 6E 74 65
 	   72 20 61 20 6E
@@ -326,30 +333,30 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
 	   73 20 74 6F 6F
 	   20 6C 61 72 67
 	   65 21 0D 0A
- 000002D0  50 6C 65 61 73							BYTE	"Please try again: ",0
+ 000002F8  50 6C 65 61 73							BYTE	"Please try again: ",0
 	   65 20 74 72 79
 	   20 61 67 61 69
 	   6E 3A 20 00
- 000002E3 59 6F 75 20 65		textEnterVals		BYTE	"You entered these numbers:",13,10,0
+ 0000030B 59 6F 75 20 65		textEnterVals		BYTE	"You entered these numbers:",13,10,0
 	   6E 74 65 72 65
 	   64 20 74 68 65
 	   73 65 20 6E 75
 	   6D 62 65 72 73
 	   3A 0D 0A 00
- 00000300 54 68 65 20 73		textSum				BYTE	"The sum of the values is: ",0
+ 00000328 54 68 65 20 73		textSum				BYTE	"The sum of the values is: ",0
 	   75 6D 20 6F 66
 	   20 74 68 65 20
 	   76 61 6C 75 65
 	   73 20 69 73 3A
 	   20 00
- 0000031B 54 68 65 20 61		textAvg				BYTE	"The average of the values is: ",0
+ 00000343 54 68 65 20 61		textAvg				BYTE	"The average of the values is: ",0
 	   76 65 72 61 67
 	   65 20 6F 66 20
 	   74 68 65 20 76
 	   61 6C 75 65 73
 	   20 69 73 3A 20
 	   00
- 0000033A 54 68 61 6E 6B		goodBye				BYTE	"Thanks for trying the program, have a great day!!",13,10,0
+ 00000362 54 68 61 6E 6B		goodBye				BYTE	"Thanks for trying the program, have a great day!!",13,10,0
 	   73 20 66 6F 72
 	   20 74 72 79 69
 	   6E 67 20 74 68
@@ -374,16 +381,16 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
  0000000F  E8 00000000 E		CALL	WriteString
 
 					; Test getting a string
-					mGetString OFFSET enterPromptInt, OFFSET sdwordString, SDWORD_LENGTH, OFFSET bytesRead
+					mGetString OFFSET enterPromptInt, OFFSET sdwordString, MAX_READ, OFFSET bytesRead
  00000014  50		     1		PUSH		EAX
  00000015  51		     1		PUSH		ECX
  00000016  52		     1		PUSH		EDX
- 00000017  BA 00000243 R     1		MOV			EDX, OFFSET enterPromptInt
+ 00000017  BA 0000026B R     1		MOV			EDX, OFFSET enterPromptInt
  0000001C  E8 00000000 E     1		CALL		WriteString
  00000021  BA 000001F9 R     1		MOV			EDX, OFFSET sdwordString
- 00000026  B9 0000000C	     1		MOV			ECX, SDWORD_LENGTH
+ 00000026  B9 00000033	     1		MOV			ECX, MAX_READ
  0000002B  E8 00000000 E     1		CALL		ReadString
- 00000030  A3 00000237 R     1		MOV			[OFFSET bytesRead], EAX
+ 00000030  A3 0000025F R     1		MOV			[OFFSET bytesRead], EAX
  00000035  5A		     1		POP			EDX
  00000036  59		     1		POP			ECX
  00000037  58		     1		POP			EAX
@@ -443,7 +450,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
  0000004D			WriteVal		ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:12:48
+Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 14:25:52
 <Project 6 - String Primitives and Macros Parameters     (Pr  Symbols 2 - 1
 
 
@@ -545,7 +552,7 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 0000036E Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000396 Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 0000004D Para	  Public  'CODE'	
 
 
@@ -747,6 +754,7 @@ KEY_EVENT  . . . . . . . . . . .	Number	 00000001h
 KEY_MASKS  . . . . . . . . . . .	Number	 0000001Fh   
 LEFT_ALT_PRESSED . . . . . . . .	Number	 00000002h   
 LEFT_CTRL_PRESSED  . . . . . . .	Number	 00000008h   
+MAX_READ . . . . . . . . . . . .	Number	 00000033h   
 MB_ABORTRETRYIGNORE  . . . . . .	Number	 00000002h   
 MB_APPLMODAL . . . . . . . . . .	Number	 00000000h   
 MB_CANCELTRYCONTINUE . . . . . .	Number	 00000006h   
@@ -779,13 +787,13 @@ NUMLOCK_ON . . . . . . . . . . .	Number	 00000020h
 OPEN_ALWAYS  . . . . . . . . . .	Number	 00000004h   
 OPEN_EXISTING  . . . . . . . . .	Number	 00000003h   
 PeekConsoleInput . . . . . . . .	Text   	 PeekConsoleInputA
-REAL4_LENGTH . . . . . . . . . .	Number	 00000032h   
+REAL4_LENGTH . . . . . . . . . .	Number	 00000031h   
 RIGHT_ALT_PRESSED  . . . . . . .	Number	 00000001h   
 RIGHT_CTRL_PRESSED . . . . . . .	Number	 00000004h   
 ReadConsoleInput . . . . . . . .	Text   	 ReadConsoleInputA
 ReadConsole  . . . . . . . . . .	Text   	 ReadConsoleA
 SCROLLLOCK_ON  . . . . . . . . .	Number	 00000040h   
-SDWORD_LENGTH  . . . . . . . . .	Number	 0000000Ch   
+SDWORD_LENGTH  . . . . . . . . .	Number	 0000000Bh   
 SHIFT_MASK . . . . . . . . . . .	Number	 00000010h   
 SHIFT_PRESSED  . . . . . . . . .	Number	 00000010h   
 STD_ERROR_HANDLE . . . . . . . .	Number	 -0000000Ch   
@@ -877,14 +885,14 @@ WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
-bytesRead  . . . . . . . . . . .	DWord	 00000237 _DATA	
+bytesRead  . . . . . . . . . . .	DWord	 0000025F _DATA	
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-enterPromptInt . . . . . . . . .	Byte	 00000243 _DATA	
-enterPromptReal  . . . . . . . .	Byte	 00000264 _DATA	
-errorPrompt  . . . . . . . . . .	Byte	 0000028B _DATA	
+enterPromptInt . . . . . . . . .	Byte	 0000026B _DATA	
+enterPromptReal  . . . . . . . .	Byte	 0000028C _DATA	
+errorPrompt  . . . . . . . . . .	Byte	 000002B3 _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 extraCredit  . . . . . . . . . .	Byte	 00000041 _DATA	
-goodBye  . . . . . . . . . . . .	Byte	 0000033A _DATA	
+goodBye  . . . . . . . . . . . .	Byte	 00000362 _DATA	
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
 instructionsInt  . . . . . . . .	Byte	 000000F3 _DATA	
@@ -896,14 +904,14 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-readValueFloat . . . . . . . . .	DWord	 0000023F _DATA	
-readValueInt . . . . . . . . . .	DWord	 0000023B _DATA	
-real4String  . . . . . . . . . .	Byte	 00000205 _DATA	
+readValueFloat . . . . . . . . .	DWord	 00000267 _DATA	
+readValueInt . . . . . . . . . .	DWord	 00000263 _DATA	
+real4String  . . . . . . . . . .	Byte	 0000022C _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
 sdwordString . . . . . . . . . .	Byte	 000001F9 _DATA	
-textAvg  . . . . . . . . . . . .	Byte	 0000031B _DATA	
-textEnterVals  . . . . . . . . .	Byte	 000002E3 _DATA	
-textSum  . . . . . . . . . . . .	Byte	 00000300 _DATA	
+textAvg  . . . . . . . . . . . .	Byte	 00000343 _DATA	
+textEnterVals  . . . . . . . . .	Byte	 0000030B _DATA	
+textSum  . . . . . . . . . . . .	Byte	 00000328 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
