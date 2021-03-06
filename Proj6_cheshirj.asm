@@ -107,7 +107,8 @@ ENDM
 	enterPromptReal		BYTE	"Please enter a floating point number: ",0
 	errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
 						BYTE	"Please try again: ",0
-	textEnterVals		BYTE	"You entered these numbers:",13,10,0
+	textEnterVals		BYTE	"You entered these numbers:",0
+	commaSpace			BYTE	", ",0
 	textSum				BYTE	"The sum of the values is: ",0
 	textAvg				BYTE	"The average of the values is: ",0
 	goodBye				BYTE	"Thanks for trying the program, have a great day!!",13,10,0
@@ -131,15 +132,42 @@ main				PROC
 	; Loop for reading in intger values
 _readInts:
 	; Put required variables for calling ReadVal on the stack and call ReadVal
-	PUSH	OFFSET readValueInt
+	PUSH	EDI
 	PUSH	OFFSET enterPromptInt
 	PUSH	OFFSET errorPrompt
 	PUSH	OFFSET MAX_READ
 	PUSH	OFFSET bytesRead
 	CALL	ReadVal
 
-	PUSH	readValueInt
+	; Move to the next value in the array of integer
+	ADD		EDI, 4
+	LOOP	_readInts
+
+	; Prepare for writine out values
+	MOV		ECX, VALUE_COUNT
+	MOV		ESI, OFFSET readValueInt
+
+	; Display the text that introduces the integer
+	MOV		EDX, OFFSET textEnterVals
+	CALL	WriteString
+
+	; Loop for writing out integers
+_showInts:	
+	; Put interger to show on stack and write it out
+	PUSH	[ESI]
 	CALL	WriteVal
+
+	; Write a comma and space, except for last item
+	CMP		ECX, 1
+	JE		_noComma
+	MOV		EDX, OFFSET commaSpace
+	CALL	WriteString
+
+	; Jump here on the last item to skip putting a comma
+_noComma:
+	; Move to the next value and loop
+	ADD		ESI, 4
+	LOOP	_showInts
 
 	Invoke ExitProcess, 0				; exit to operating system
 main				ENDP
@@ -324,7 +352,7 @@ WriteVal		PROC
 	STOSB		
 
 	;	Get the value read for reading to a string
-	MOV			EAX, [EBP +8]
+	MOV			EAX, [EBP + 8]
 
 	; Check if it's negative
 	CMP			EAX, 0
