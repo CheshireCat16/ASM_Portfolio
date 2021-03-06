@@ -88,6 +88,7 @@ ENDM
 	SDWORD_LENGTH	= 11				; Number of digits in an SDWORD type plus space for sign
 	REAL4_LENGTH	= 49				; Max digits and decimal point in REAL4 (1.4E-45) plus space for sign
 	MAX_READ		= REAL4_LENGTH + 2  ; Max number of digits to read, gives space for null and extra for detecting long input
+	VALUE_COUNT		= 10				; The number of values to read in
 
 .data
 	intro				BYTE	"Project 6 - String Primitives and Macros -- by John Cheshire",13,10,13,10,0
@@ -99,9 +100,9 @@ ENDM
 						BYTE	"The program will display the numbers, their sum, and their average.",13,10,13,10,0
 	sdwordString		BYTE	MAX_READ DUP(0)
 	real4String			BYTE	MAX_READ DUP(0)
+	readValueInt		SDWORD	VALUE_COUNT DUP(0)
+	readValueFloat		REAL4	VALUE_COUNT DUP(0.0)
 	bytesRead			DWORD	0
-	readValueInt		SDWORD	0
-	readValueFloat		REAL4	0.0
 	enterPromptInt		BYTE	"Please enter a signed interger: ",0
 	enterPromptReal		BYTE	"Please enter a floating point number: ",0
 	errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
@@ -123,11 +124,20 @@ main				PROC
 	MOV		EDX, OFFSET extraCredit
 	CALL	WriteString
 
-	; Test getting a string
-	mGetString OFFSET enterPromptInt, OFFSET sdwordString, MAX_READ, OFFSET bytesRead
+	; Set up counter for loop for reading Int values and beginning of array of SDWORDS
+	MOV		ECX, VALUE_COUNT
+	MOV		EDI, OFFSET readValueInt
 
-	; Test writing a string
-	mDisplayString OFFSET sdwordString
+	; Loop for reading in intger values
+_readInts:
+	; Put required variables for calling ReadVal on the stack and call ReadVal
+	PUSH	OFFSET sdwordString
+	PUSH	EDI
+	PUSH	OFFSET enterPromptInt
+	PUSH	OFFSET errorPrompt
+	PUSH	OFFSET MAX_READ
+	PUSH	OFFSET bytesRead
+	CALL	ReadVal
 
 	Invoke ExitProcess, 0				; exit to operating system
 main				ENDP
@@ -143,14 +153,58 @@ main				ENDP
 ; Postconditions: 
 ;
 ; Receives:
-;			[EBP + 8]	=	
+;			[EBP + 8]	=	Number of bytes read
+;			[EBP + 12]	=	Maximum number of bytes to read
+;			[EBP + 16]	=	Prompt to display when an error is detected
+;			[EBP + 20]	=	Basic prompt
+;			[EBP + 24]	=	Adddress of variable to store SDWORD
 ;
-; Returns: Nothing
+; Returns: Entered string as an SDWORD in [EBP + 24]
 ;
 ;--------------------------------------------------------------------------------------------------------------
 ReadVal		PROC
+	; Set up stack base pointer and preseve modified registers
+	LOCAL		inputString:	DWORD			; Offest of location for read in string on stack
+	LOCAL		finalMult:		SDWORD			; Multiplier to make value positive or negative
+	PUSH		EDI
+	PUSH		EDX
+	PUSH		ESI
 
-	RET
+	; Move ESP down by max number of bytes to read and store in top in inputString
+	SUB			ESP, [EBP + 12]
+	MOV			inputString, ESP
+
+	; Default to a multiplier of 1 (positive
+	MOV			finalMult, 1
+
+	; Prompt user and read in string
+	mGetString	[EBP + 20], inputString, [EBP + 12], [EBP + 8]
+
+	; Check if the first value in the string is a +
+	MOV			ESI, inputString
+	LODSB		
+	CMP			EAX, 43
+	JE			_mainLoop
+
+	; Check if the first value in the string is a - and set to finalMult to -1 to make value negative at end
+	CMP			EAX, 45
+	JNE			_mainLoop
+	MOV			finalMult, -1
+
+	; Set up the counter for number of values to read
+	MOV			ECX, [EBP + 8]
+
+_mainLoop:
+	
+
+
+
+	; Restore modified registers
+	ADD			ESP, [EBP + 12]
+	POP			ESI
+	POP			EDX
+	POP			EDI
+	RET			20
 ReadVal		ENDP
 
 
