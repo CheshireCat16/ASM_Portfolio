@@ -131,7 +131,6 @@ main				PROC
 	; Loop for reading in intger values
 _readInts:
 	; Put required variables for calling ReadVal on the stack and call ReadVal
-	PUSH	OFFSET sdwordString
 	PUSH	EDI
 	PUSH	OFFSET enterPromptInt
 	PUSH	OFFSET errorPrompt
@@ -144,7 +143,7 @@ main				ENDP
 
 
 ;--------------------------------------------------------------------------------------------------------------
-; Name: 
+; Name: ReadVal
 ;
 ; Description: 
 ;
@@ -169,6 +168,9 @@ ReadVal		PROC
 	PUSH		EDI
 	PUSH		EDX
 	PUSH		ESI
+	PUSH		ECX
+	PUSH		EAX
+	PUSH		EBX
 
 	; Move ESP down by max number of bytes to read and store in top in inputString
 	SUB			ESP, [EBP + 12]
@@ -177,30 +179,77 @@ ReadVal		PROC
 	; Default to a multiplier of 1 (positive
 	MOV			finalMult, 1
 
+	; Make sure the passed SDWORD variable is empty
+	MOV			EBX, 0
+	MOV			[EBP + 24], EBX
+
 	; Prompt user and read in string
 	mGetString	[EBP + 20], inputString, [EBP + 12], [EBP + 8]
-
-	; Check if the first value in the string is a +
-	MOV			ESI, inputString
-	LODSB		
-	CMP			EAX, 43
-	JE			_mainLoop
-
-	; Check if the first value in the string is a - and set to finalMult to -1 to make value negative at end
-	CMP			EAX, 45
-	JNE			_mainLoop
-	MOV			finalMult, -1
 
 	; Set up the counter for number of values to read
 	MOV			ECX, [EBP + 8]
 
-_mainLoop:
+	; Load the first value
+	MOV			ESI, inputString
+	XOR			EAX, EAX			; Clears EAX
+	LODSB
+
+	; Check if the first value in the string is a +
+	CMP			EAX, 43
+	JNE			_notPlus
+	LODSB
+	DEC			ECX
+	JMP			_mainLoop
 	
+	; Check if the first value in the string is a - and set to finalMult to -1 to make value negative at end
+_notPlus:
+	CMP			EAX, 45
+	JNE			_mainLoop
+	MOV			finalMult, -1
+	LODSB
+	DEC			ECX
+
+	; Loop through all input values, validating each one
+_mainLoop:
+	; Checks if the current value is less than a 0 in ASCII
+	CMP			EAX, 48
+	JL			_invalid
+	; Checks if the current value is greater than 9 in ASCII
+	CMP			EAX, 57
+	JG			_invalid
+
+	; Reduce EAX by 48 to make 0 ASCII into 0 int
+	SUB			EAX, 48
+
+	; Multiply [EBP + 24] by 10 and add the new value
+	MOV			EBX, 10
+	PUSH		EAX
+	MOV			EAX, [EBP + 24]
+	MUL			EBX
+	MOV			[EBP + 24], EAX
+	POP			EAX
+	ADD			[EBP + 24], EAX
+
+	; Move to next value
+	LODSB
+
+	LOOP		_mainLoop
+
+	MOV			EAX, [EBP + 24]
+	CALL		WriteDec
+
+
+
+	; Handles the case of an invalid input with a new prompt
+_invalid:
 
 
 
 	; Restore modified registers
 	ADD			ESP, [EBP + 12]
+	POP			EBX
+	POP			EAX
+	POP			ECX
 	POP			ESI
 	POP			EDX
 	POP			EDI
