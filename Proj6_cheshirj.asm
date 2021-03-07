@@ -107,7 +107,7 @@ ENDM
 	enterPromptReal		BYTE	"Please enter a floating point number: ",0
 	errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
 						BYTE	"Please try again: ",0
-	textEnterVals		BYTE	"You entered these numbers:",0
+	textEnterVals		BYTE	"You entered these numbers: ",0
 	commaSpace			BYTE	", ",0
 	textSum				BYTE	"The sum of the values is: ",0
 	textAvg				BYTE	"The average of the values is: ",0
@@ -116,58 +116,114 @@ ENDM
 
 .code
 main				PROC
-	
+	;-------------------------------------------------------------------
+	; Display program introduction, extra credit lines,
+	; and explain how the program works.
+	;-------------------------------------------------------------------
 	; Display the program introduction
-	MOV		EDX, OFFSET intro
-	CALL	WriteString
+	MOV				EDX, OFFSET intro
+	CALL			WriteString
 
 	; Display extra credit lines
-	MOV		EDX, OFFSET extraCredit
-	CALL	WriteString
+	MOV				EDX, OFFSET extraCredit
+	CALL			WriteString
 
+	;-------------------------------------------------------------------
+	; This section of the program goes through a loop to read in 
+	; the required number of values.
+	;-------------------------------------------------------------------
 	; Set up counter for loop for reading Int values and beginning of array of SDWORDS
-	MOV		ECX, VALUE_COUNT
-	MOV		EDI, OFFSET readValueInt
+	MOV				ECX, VALUE_COUNT
+	MOV				EDI, OFFSET readValueInt
 
 	; Loop for reading in intger values
 _readInts:
 	; Put required variables for calling ReadVal on the stack and call ReadVal
-	PUSH	EDI
-	PUSH	OFFSET enterPromptInt
-	PUSH	OFFSET errorPrompt
-	PUSH	OFFSET MAX_READ
-	PUSH	OFFSET bytesRead
-	CALL	ReadVal
+	PUSH			EDI
+	PUSH			OFFSET enterPromptInt
+	PUSH			OFFSET errorPrompt
+	PUSH			OFFSET MAX_READ
+	PUSH			OFFSET bytesRead
+	CALL			ReadVal
 
 	; Move to the next value in the array of integer
-	ADD		EDI, 4
-	LOOP	_readInts
+	ADD				EDI, 4
+	LOOP			_readInts
 
+
+	;-------------------------------------------------------------------
+	; This section of the program goes through a loop to write 
+	; out the values that were read in.
+	;-------------------------------------------------------------------
 	; Prepare for writine out values
-	MOV		ECX, VALUE_COUNT
-	MOV		ESI, OFFSET readValueInt
+	MOV				ECX, VALUE_COUNT
+	MOV				ESI, OFFSET readValueInt
 
 	; Display the text that introduces the integer
-	MOV		EDX, OFFSET textEnterVals
-	CALL	WriteString
+	MOV				EDX, OFFSET textEnterVals
+	CALL			WriteString
 
 	; Loop for writing out integers
 _showInts:	
 	; Put interger to show on stack and write it out
-	PUSH	[ESI]
-	CALL	WriteVal
+	PUSH			[ESI]
+	CALL			WriteVal
 
 	; Write a comma and space, except for last item
-	CMP		ECX, 1
-	JE		_noComma
-	MOV		EDX, OFFSET commaSpace
-	CALL	WriteString
+	CMP				ECX, 1
+	JE				_noComma
+	MOV				EDX, OFFSET commaSpace
+	CALL			WriteString
 
 	; Jump here on the last item to skip putting a comma
 _noComma:
 	; Move to the next value and loop
-	ADD		ESI, 4
-	LOOP	_showInts
+	ADD				ESI, 4
+	LOOP			_showInts
+
+	; After showing the integer, a new line is needed
+	CALL			CrLf
+
+	;-------------------------------------------------------------------
+	; This section of the program calculates the sum of the numbers
+	; and the average of the numbers and then displays them.
+	;-------------------------------------------------------------------
+	; Clear EAX for use as an accumulator
+	XOR				EAX, EAX
+
+	; Set up ESI to read in the ints and ECX to count
+	MOV				ESI, OFFSET readValueInt
+	MOV				ECX, VALUE_COUNT
+
+	; Add up integers to get sum
+_addAnotherInt:
+	ADD				EAX, [ESI]
+	ADD				ESI, TYPE SDWORD
+	LOOP			_addAnotherInt
+
+	; Show the text string for the sum
+	MOV				EDX, OFFSET textSum
+	CALL			WriteString
+	PUSH			EAX
+	CALL			WriteVal
+	CALL			CrLf
+
+	; Calculate the average
+	MOV				EBX, VALUE_COUNT
+	CDQ
+	IDIV			EBX
+
+	; Show the text string for the average
+	MOV				EDX, OFFSET textAvg
+	CALL			WriteString
+	PUSH			EAX
+	CALL			WriteVal
+	CALL			CrLf
+	CALL			CrLf
+
+	; Say goodbye
+	MOV				EDX, OFFSET goodBye
+	CALL			WriteString
 
 	Invoke ExitProcess, 0				; exit to operating system
 main				ENDP
@@ -200,6 +256,7 @@ ReadVal		PROC
 	LOCAL		inputString:	DWORD			; Offest of location for read in string on stack
 	LOCAL		finalMult:		SDWORD			; Multiplier to make value positive or negative
 	LOCAL		maxBytes:		DWORD			; Max bytes to read for valid input
+	LOCAL		currentValue:	DWORD			; Holds the currently read value from the string
 	PUSH		EDI
 	PUSH		EDX
 	PUSH		ESI
@@ -207,9 +264,10 @@ ReadVal		PROC
 	PUSH		EAX
 	PUSH		EBX
 
-	; Move ESP down by max number of bytes to read and store in top in inputString
+	; Move ESP down by max number of bytes to read and store in top in inputString and make sure direction flag is set
 	SUB			ESP, [EBP + 12]
 	MOV			inputString, ESP
+	CLD
 
 	; Default to a multiplier of 1 (positive) and max bytes without a sign
 	MOV			finalMult, 1
@@ -273,16 +331,36 @@ _mainLoop:
 
 	; Multiply [EBP + 24] by 10 and add the new value
 	MOV			EBX, 10
-	PUSH		EAX
+	MOV			currentValue, EAX
 	MOV			EAX, [EDI]
 	MUL			EBX
+	; Make sure the carry flag has not been set when we add
+	JC			_invalid
 	MOV			[EDI], EAX
-	POP			EAX
+	MOV			EAX, currentValue
 	ADD			[EDI], EAX
+	; Make sure the carry flag has not been set when we multiply
+	JC			_invalid
+
 
 	; Move to next value
 	LODSB
 	LOOP		_mainLoop
+
+	; Check whether the value is too great for a positive or negative SDWORD
+	MOV			EBX, 2147483648
+	CMP			EBX, [EDI]
+	JB			_invalid
+	JE			_checkNegative
+	JMP			_sizeCheckPassed
+
+	; Check if the value is negative, if it's not the number entered was too large
+_checkNegative:
+	CMP			finalMult, -1
+	JNE			_invalid
+
+	; Jumping here after checking the number is less or equal to than 2^31 - 1 and greater than or equal to -2^31
+_sizeCheckPassed:
 
 	; Multiply by finalMult to get correct sign
 	MOV			EAX, [EDI]
@@ -296,6 +374,15 @@ _mainLoop:
 
 	; Handles the case of an invalid input with a new prompt
 _invalid:
+	; Default to a multiplier of 1 (positive) and max bytes without a sign
+	MOV			finalMult, 1
+	MOV			maxBytes, 10
+
+	; Make sure the passed SDWORD variable is empty
+	MOV			EDI, [EBP + 24]
+	MOV			EBX, 0
+	MOV			[EDI], EBX
+
 	; Prompt user with error message and read in string
 	mGetString	[EBP + 16], inputString, [EBP + 12], [EBP + 8]
 	JMP			_startAgain
