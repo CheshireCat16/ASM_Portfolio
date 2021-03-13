@@ -17,7 +17,7 @@ INCLUDE Irvine32.inc
 ; Description:	Shows the user a prompt and then reads in a string of up to the specified size while storing the
 ;				number of bytes read in the specified variable.
 ;
-; Preconditions: EAX, ECX, and EDX should not be used as parameters
+; Preconditions:
 ;
 ; Postconditions: None
 ;
@@ -124,11 +124,7 @@ main				PROC
 	CALL			WriteString
 
 	; Display extra credit lines
-;	MOV				EDX, OFFSET extraCredit
-;	CALL			WriteString
-
-	; Display the program instructions
-	MOV				EDX, OFFSET instructionsInt
+	MOV				EDX, OFFSET extraCredit
 	CALL			WriteString
 
 	;-------------------------------------------------------------------
@@ -152,9 +148,6 @@ _readInts:
 	; Move to the next value in the array of integer
 	ADD				EDI, 4
 	LOOP			_readInts
-
-	; Add a new line to improve output formatting
-	CALL			CrLf
 
 
 	;-------------------------------------------------------------------
