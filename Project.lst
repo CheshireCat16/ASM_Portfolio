@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 20:46:08
+Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 08:55:15
 <Project 6 - String Primitives and Macros Parameters     (Pr  Page 1 - 1
 
 
@@ -11,8 +11,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 20:46:08
 				; Project Number: 6                Due Date: March 14, 2021
 				; Description:	This program reads in 10 integers as strings, converts the strings to SDWORDS,
 				;				displays the numbers, calculates the average, and calculates the sum of the numbers.
-				;				It then reads in 10 floats as strings, converts them to floating point numbers,
-				;				displays the numbers, calculates the average, and calculates the sum of the numbers.
+
 
 				INCLUDE Irvine32.inc
 			      C ; Include file for Irvine32.lib             (Irvine32.inc)
@@ -506,7 +505,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 20:46:08
 				;				and that the input is a valid number. Also accepts +/- signs. If number is not
 				;				valid, user will be prompted to try entering a number again.
 				;
-				; Preconditions:
+				; Preconditions: None
 				;
 				; Postconditions: Values at [EBP + 8] may be modified
 				;
@@ -514,7 +513,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 20:46:08
 				;			[EBP + 8]	=	Number of bytes read
 				;			[EBP + 12]	=	Maximum number of bytes to read
 				;			[EBP + 16]	=	Prompt to display when an error is detected
-				;			[EBP + 20]	=	Basic prompt
+				;			[EBP + 20]	=	Basic prompt for an integer
 				;			[EBP + 24]	=	Adddress of variable to store SDWORD
 				;
 				; Returns:
@@ -695,7 +694,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 20:46:08
 
 					; Restore modified registers
  000001C1  03 65 0C			ADD			ESP, [EBP + 12]
- 000001C4  5B				POP			EBX
+ 000001C4  5B	POP			EBX
  000001C5  58				POP			EAX
  000001C6  59				POP			ECX
  000001C7  5E				POP			ESI
@@ -809,7 +808,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 20:46:08
  00000243			WriteVal		ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/06/21 20:46:08
+Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 08:55:15
 <Project 6 - String Primitives and Macros Parameters     (Pr  Symbols 2 - 1
 
 
