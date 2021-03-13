@@ -7,8 +7,7 @@ TITLE Project 6 - String Primitives and Macros Parameters     (Proj6_cheshirj.as
 ; Project Number: 6                Due Date: March 14, 2021
 ; Description:	This program reads in 10 integers as strings, converts the strings to SDWORDS,
 ;				displays the numbers, calculates the average, and calculates the sum of the numbers.
-;				It then reads in 10 floats as strings, converts them to floating point numbers,
-;				displays the numbers, calculates the average, and calculates the sum of the numbers.
+
 
 INCLUDE Irvine32.inc
 
@@ -243,7 +242,7 @@ main				ENDP
 ;				and that the input is a valid number. Also accepts +/- signs. If number is not
 ;				valid, user will be prompted to try entering a number again.
 ;
-; Preconditions:
+; Preconditions: None
 ;
 ; Postconditions: Values at [EBP + 8] may be modified
 ;
@@ -251,7 +250,7 @@ main				ENDP
 ;			[EBP + 8]	=	Number of bytes read
 ;			[EBP + 12]	=	Maximum number of bytes to read
 ;			[EBP + 16]	=	Prompt to display when an error is detected
-;			[EBP + 20]	=	Basic prompt
+;			[EBP + 20]	=	Basic prompt for an integer
 ;			[EBP + 24]	=	Adddress of variable to store SDWORD
 ;
 ; Returns:
