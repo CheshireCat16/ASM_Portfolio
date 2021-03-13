@@ -104,7 +104,11 @@ ENDM
 	readValueInt		SDWORD	VALUE_COUNT DUP(0)
 	readValueFloat		REAL4	VALUE_COUNT DUP(0.0)
 	bytesRead			DWORD	0
-	enterPromptInt		BYTE	"Please enter a signed interger: ",0
+	numberCount			DWORD	0
+	subTotal			SDWORD	0
+	numberCountText		BYTE	"Input #",0
+	subTotalText		BYTE	" - Subtotal: ",0
+	enterPromptInt		BYTE	" - Please enter a signed interger: ",0
 	enterPromptReal		BYTE	"Please enter a floating point number: ",0
 	errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
 						BYTE	"Please try again: ",0
@@ -140,9 +144,21 @@ main				PROC
 	; Set up counter for loop for reading Int values and beginning of array of SDWORDS
 	MOV				ECX, VALUE_COUNT
 	MOV				EDI, OFFSET readValueInt
+	MOV				numberCount, 1
+	MOV				subTotal, 0
 
 	; Loop for reading in intger values
 _readInts:
+	; Show the current input number and subtotal
+	MOV				EDX, OFFSET numberCountText
+	CALL			WriteString
+	PUSH			numberCount
+	CALL			WriteVal
+	MOV				EDX, OFFSET subTotalText
+	CALL			WriteString
+	PUSH			subTotal
+	CALL			WriteVal
+
 	; Put required variables for calling ReadVal on the stack and call ReadVal
 	PUSH			EDI
 	PUSH			OFFSET enterPromptInt
@@ -151,7 +167,10 @@ _readInts:
 	PUSH			OFFSET bytesRead
 	CALL			ReadVal
 
-	; Move to the next value in the array of integer
+	; Update count and subtotal, move to the next value in the array of integer
+	INC				numberCount
+	MOV				EAX, [EDI]
+	ADD				subTotal, EAX
 	ADD				EDI, 4
 	LOOP			_readInts
 
