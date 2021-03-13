@@ -7,8 +7,6 @@ TITLE Project 6 - String Primitives and Macros Parameters     (Proj6_cheshirj.as
 ; Project Number: 6                Due Date: March 14, 2021
 ; Description:	This program reads in 10 integers as strings, converts the strings to SDWORDS,
 ;				displays the numbers, calculates the average, and calculates the sum of the numbers.
-;				It then reads in 10 floats as strings, converts them to floating point numbers,
-;				displays the numbers, calculates the average, and calculates the sum of the numbers.
 
 
 INCLUDE Irvine32.inc
@@ -94,7 +92,6 @@ ENDM
 .data
 	intro				BYTE	"Project 6 - String Primitives and Macros -- by John Cheshire",13,10,13,10,0
 	extraCredit			BYTE	"**EC: Each line asking for input is numbered",13,10,"and the running total sum is displayed",13,10
-						BYTE	"**EC: ReadFloatVal and WriteFloatVal are implemented,",13,10,"to handle floating point numbers",13,10,13,10,0
 	instructionsInt		BYTE	"Please enter ten signed decimal integers.",13,10
 						BYTE	"Numbers must be between 2,147,483,647 and -2,147,483,648 (inclusive).",13,10
 						BYTE	"Additionally, the sum of the numbers must also be between those numbers.",13,10,13,10
