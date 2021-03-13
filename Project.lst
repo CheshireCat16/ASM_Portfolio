@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
+Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:10:02
 <Project 6 - String Primitives and Macros Parameters     (Pr  Page 1 - 1
 
 
@@ -10,8 +10,6 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 				; Course number/section:   CS271 Section 401
 				; Project Number: 6                Due Date: March 14, 2021
 				; Description:	This program reads in 10 integers as strings, converts the strings to SDWORDS,
-				;				displays the numbers, calculates the average, and calculates the sum of the numbers.
-				;				It then reads in 10 floats as strings, converts them to floating point numbers,
 				;				displays the numbers, calculates the average, and calculates the sum of the numbers.
 
 
@@ -223,26 +221,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 	   64 69 73 70 6C
 	   61 79 65 64 0D
 	   0A
- 00000097  2A 2A 45 43 3A							BYTE	"**EC: ReadFloatVal and WriteFloatVal are implemented,",13,10,"to handle floating point numbers",13,10,13,10,0
-	   20 52 65 61 64
-	   46 6C 6F 61 74
-	   56 61 6C 20 61
-	   6E 64 20 57 72
-	   69 74 65 46 6C
-	   6F 61 74 56 61
-	   6C 20 61 72 65
-	   20 69 6D 70 6C
-	   65 6D 65 6E 74
-	   65 64 2C 0D 0A
-	   74 6F 20 68 61
-	   6E 64 6C 65 20
-	   66 6C 6F 61 74
-	   69 6E 67 20 70
-	   6F 69 6E 74 20
-	   6E 75 6D 62 65
-	   72 73 0D 0A 0D
-	   0A 00
- 000000F3 50 6C 65 61 73		instructionsInt		BYTE	"Please enter ten signed decimal integers.",13,10
+ 00000097 50 6C 65 61 73		instructionsInt		BYTE	"Please enter ten signed decimal integers.",13,10
 	   65 20 65 6E 74
 	   65 72 20 74 65
 	   6E 20 73 69 67
@@ -251,7 +230,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 	   6C 20 69 6E 74
 	   65 67 65 72 73
 	   2E 0D 0A
- 0000011E  4E 75 6D 62 65							BYTE	"Numbers must be between 2,147,483,647 and -2,147,483,648 (inclusive).",13,10
+ 000000C2  4E 75 6D 62 65							BYTE	"Numbers must be between 2,147,483,647 and -2,147,483,648 (inclusive).",13,10
 	   72 73 20 6D 75
 	   73 74 20 62 65
 	   20 62 65 74 77
@@ -266,7 +245,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 	   63 6C 75 73 69
 	   76 65 29 2E 0D
 	   0A
- 00000165  41 64 64 69 74							BYTE	"Additionally, the sum of the numbers must also be between those numbers.",13,10,13,10
+ 00000109  41 64 64 69 74							BYTE	"Additionally, the sum of the numbers must also be between those numbers.",13,10,13,10
 	   69 6F 6E 61 6C
 	   6C 79 2C 20 74
 	   68 65 20 73 75
@@ -282,7 +261,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 	   75 6D 62 65 72
 	   73 2E 0D 0A 0D
 	   0A
- 000001B1  54 68 65 20 70							BYTE	"The program will display the numbers, their sum, and their average.",13,10,13,10,0
+ 00000155  54 68 65 20 70							BYTE	"The program will display the numbers, their sum, and their average.",13,10,13,10,0
 	   72 6F 67 72 61
 	   6D 20 77 69 6C
 	   6C 20 64 69 73
@@ -297,27 +276,27 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 	   76 65 72 61 67
 	   65 2E 0D 0A 0D
 	   0A 00
- 000001F9  00000033 [			sdwordString		BYTE	MAX_READ DUP(0)
+ 0000019D  00000033 [			sdwordString		BYTE	MAX_READ DUP(0)
 	    00
 	   ]
- 0000022C  00000033 [			real4String			BYTE	MAX_READ DUP(0)
+ 000001D0  00000033 [			real4String			BYTE	MAX_READ DUP(0)
 	    00
 	   ]
- 0000025F  0000000A [			readValueInt		SDWORD	VALUE_COUNT DUP(0)
+ 00000203  0000000A [			readValueInt		SDWORD	VALUE_COUNT DUP(0)
 	    00000000
 	   ]
- 00000287  0000000A [			readValueFloat		REAL4	VALUE_COUNT DUP(0.0)
+ 0000022B  0000000A [			readValueFloat		REAL4	VALUE_COUNT DUP(0.0)
 	    00000000
 	   ]
- 000002AF 00000000			bytesRead			DWORD	0
- 000002B3 00000000			numberCount			DWORD	0
- 000002B7 00000000			subTotal			SDWORD	0
- 000002BB 49 6E 70 75 74		numberCountText		BYTE	"Input #",0
+ 00000253 00000000			bytesRead			DWORD	0
+ 00000257 00000000			numberCount			DWORD	0
+ 0000025B 00000000			subTotal			SDWORD	0
+ 0000025F 49 6E 70 75 74		numberCountText		BYTE	"Input #",0
 	   20 23 00
- 000002C3 20 2D 20 53 75		subTotalText		BYTE	" - Subtotal: ",0
+ 00000267 20 2D 20 53 75		subTotalText		BYTE	" - Subtotal: ",0
 	   62 74 6F 74 61
 	   6C 3A 20 00
- 000002D1 20 2D 20 50 6C		enterPromptInt		BYTE	" - Please enter a signed interger: ",0
+ 00000275 20 2D 20 50 6C		enterPromptInt		BYTE	" - Please enter a signed interger: ",0
 	   65 61 73 65 20
 	   65 6E 74 65 72
 	   20 61 20 73 69
@@ -325,7 +304,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 	   69 6E 74 65 72
 	   67 65 72 3A 20
 	   00
- 000002F5 50 6C 65 61 73		enterPromptReal		BYTE	"Please enter a floating point number: ",0
+ 00000299 50 6C 65 61 73		enterPromptReal		BYTE	"Please enter a floating point number: ",0
 	   65 20 65 6E 74
 	   65 72 20 61 20
 	   66 6C 6F 61 74
@@ -333,7 +312,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 	   6F 69 6E 74 20
 	   6E 75 6D 62 65
 	   72 3A 20 00
- 0000031C 59 6F 75 20 64		errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
+ 000002C0 59 6F 75 20 64		errorPrompt			BYTE	"You didn't enter a number in the proper format or it was too large!",13,10
 	   69 64 6E 27 74
 	   20 65 6E 74 65
 	   72 20 61 20 6E
@@ -347,31 +326,31 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 	   73 20 74 6F 6F
 	   20 6C 61 72 67
 	   65 21 0D 0A
- 00000361  50 6C 65 61 73							BYTE	"Please try again: ",0
+ 00000305  50 6C 65 61 73							BYTE	"Please try again: ",0
 	   65 20 74 72 79
 	   20 61 67 61 69
 	   6E 3A 20 00
- 00000374 59 6F 75 20 65		textEnterVals		BYTE	"You entered these numbers: ",0
+ 00000318 59 6F 75 20 65		textEnterVals		BYTE	"You entered these numbers: ",0
 	   6E 74 65 72 65
 	   64 20 74 68 65
 	   73 65 20 6E 75
 	   6D 62 65 72 73
 	   3A 20 00
- 00000390 2C 20 00			commaSpace			BYTE	", ",0
- 00000393 54 68 65 20 73		textSum				BYTE	"The sum of the values is: ",0
+ 00000334 2C 20 00			commaSpace			BYTE	", ",0
+ 00000337 54 68 65 20 73		textSum				BYTE	"The sum of the values is: ",0
 	   75 6D 20 6F 66
 	   20 74 68 65 20
 	   76 61 6C 75 65
 	   73 20 69 73 3A
 	   20 00
- 000003AE 54 68 65 20 61		textAvg				BYTE	"The average of the values is: ",0
+ 00000352 54 68 65 20 61		textAvg				BYTE	"The average of the values is: ",0
 	   76 65 72 61 67
 	   65 20 6F 66 20
 	   74 68 65 20 76
 	   61 6C 75 65 73
 	   20 69 73 3A 20
 	   00
- 000003CD 54 68 61 6E 6B		goodBye				BYTE	"Thanks for trying the program, have a great day!!",13,10,0
+ 00000371 54 68 61 6E 6B		goodBye				BYTE	"Thanks for trying the program, have a great day!!",13,10,0
 	   73 20 66 6F 72
 	   20 74 72 79 69
 	   6E 67 20 74 68
@@ -399,7 +378,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
  0000000F  E8 00000000 E		CALL			WriteString
 
 					; Display instructions
- 00000014  BA 000000F3 R		MOV				EDX, OFFSET instructionsInt
+ 00000014  BA 00000097 R		MOV				EDX, OFFSET instructionsInt
  00000019  E8 00000000 E		CALL			WriteString
 
 					;-------------------------------------------------------------------
@@ -408,36 +387,36 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 					;-------------------------------------------------------------------
 					; Set up counter for loop for reading Int values and beginning of array of SDWORDS
  0000001E  B9 0000000A			MOV				ECX, VALUE_COUNT
- 00000023  BF 0000025F R		MOV				EDI, OFFSET readValueInt
- 00000028  C7 05 000002B3 R		MOV				numberCount, 1
+ 00000023  BF 00000203 R		MOV				EDI, OFFSET readValueInt
+ 00000028  C7 05 00000257 R		MOV				numberCount, 1
 	   00000001
- 00000032  C7 05 000002B7 R		MOV				subTotal, 0
+ 00000032  C7 05 0000025B R		MOV				subTotal, 0
 	   00000000
 
 					; Loop for reading in intger values
  0000003C			_readInts:
 					; Show the current input number and subtotal
- 0000003C  BA 000002BB R		MOV				EDX, OFFSET numberCountText
+ 0000003C  BA 0000025F R		MOV				EDX, OFFSET numberCountText
  00000041  E8 00000000 E		CALL			WriteString
- 00000046  FF 35 000002B3 R		PUSH			numberCount
+ 00000046  FF 35 00000257 R		PUSH			numberCount
  0000004C  E8 000001CE			CALL			WriteVal
- 00000051  BA 000002C3 R		MOV				EDX, OFFSET subTotalText
+ 00000051  BA 00000267 R		MOV				EDX, OFFSET subTotalText
  00000056  E8 00000000 E		CALL			WriteString
- 0000005B  FF 35 000002B7 R		PUSH			subTotal
+ 0000005B  FF 35 0000025B R		PUSH			subTotal
  00000061  E8 000001B9			CALL			WriteVal
 
 					; Put required variables for calling ReadVal on the stack and call ReadVal
  00000066  57				PUSH			EDI
- 00000067  68 000002D1 R		PUSH			OFFSET enterPromptInt
- 0000006C  68 0000031C R		PUSH			OFFSET errorPrompt
+ 00000067  68 00000275 R		PUSH			OFFSET enterPromptInt
+ 0000006C  68 000002C0 R		PUSH			OFFSET errorPrompt
  00000071  6A 33			PUSH			OFFSET MAX_READ
- 00000073  68 000002AF R		PUSH			OFFSET bytesRead
+ 00000073  68 00000253 R		PUSH			OFFSET bytesRead
  00000078  E8 000000A2			CALL			ReadVal
 
 					; Update count and subtotal, move to the next value in the array of integer
- 0000007D  FF 05 000002B3 R		INC				numberCount
+ 0000007D  FF 05 00000257 R		INC				numberCount
  00000083  8B 07			MOV				EAX, [EDI]
- 00000085  01 05 000002B7 R		ADD				subTotal, EAX
+ 00000085  01 05 0000025B R		ADD				subTotal, EAX
  0000008B  83 C7 04			ADD				EDI, 4
  0000008E  E2 AC			LOOP			_readInts
 
@@ -448,10 +427,10 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 					;-------------------------------------------------------------------
 					; Prepare for writine out values
  00000090  B9 0000000A			MOV				ECX, VALUE_COUNT
- 00000095  BE 0000025F R		MOV				ESI, OFFSET readValueInt
+ 00000095  BE 00000203 R		MOV				ESI, OFFSET readValueInt
 
 					; Display the text that introduces the integer
- 0000009A  BA 00000374 R		MOV				EDX, OFFSET textEnterVals
+ 0000009A  BA 00000318 R		MOV				EDX, OFFSET textEnterVals
  0000009F  E8 00000000 E		CALL			WriteString
 
 					; Loop for writing out integers
@@ -463,7 +442,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
 					; Write a comma and space, except for last item
  000000AB  83 F9 01			CMP				ECX, 1
  000000AE  74 0A			JE				_noComma
- 000000B0  BA 00000390 R		MOV				EDX, OFFSET commaSpace
+ 000000B0  BA 00000334 R		MOV				EDX, OFFSET commaSpace
  000000B5  E8 00000000 E		CALL			WriteString
 
 					; Jump here on the last item to skip putting a comma
@@ -483,7 +462,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
  000000C4  33 C0			XOR				EAX, EAX
 
 					; Set up ESI to read in the ints and ECX to count
- 000000C6  BE 0000025F R		MOV				ESI, OFFSET readValueInt
+ 000000C6  BE 00000203 R		MOV				ESI, OFFSET readValueInt
  000000CB  B9 0000000A			MOV				ECX, VALUE_COUNT
 
 					; Add up integers to get sum
@@ -493,7 +472,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
  000000D5  E2 F9			LOOP			_addAnotherInt
 
 					; Show the text string for the sum
- 000000D7  BA 00000393 R		MOV				EDX, OFFSET textSum
+ 000000D7  BA 00000337 R		MOV				EDX, OFFSET textSum
  000000DC  E8 00000000 E		CALL			WriteString
  000000E1  50				PUSH			EAX
  000000E2  E8 00000138			CALL			WriteVal
@@ -505,7 +484,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
  000000F2  F7 FB			IDIV			EBX
 
 					; Show the text string for the average
- 000000F4  BA 000003AE R		MOV				EDX, OFFSET textAvg
+ 000000F4  BA 00000352 R		MOV				EDX, OFFSET textAvg
  000000F9  E8 00000000 E		CALL			WriteString
  000000FE  50				PUSH			EAX
  000000FF  E8 0000011B			CALL			WriteVal
@@ -513,7 +492,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
  00000109  E8 00000000 E		CALL			CrLf
 
 					; Say goodbye
- 0000010E  BA 000003CD R		MOV				EDX, OFFSET goodBye
+ 0000010E  BA 00000371 R		MOV				EDX, OFFSET goodBye
  00000113  E8 00000000 E		CALL			WriteString
 
 					Invoke ExitProcess, 0				; exit to operating system
@@ -832,7 +811,7 @@ Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
  00000294			WriteVal		ENDP
 
 				END main
-Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:07:58
+Microsoft (R) Macro Assembler Version 14.28.29335.0	    03/13/21 09:10:02
 <Project 6 - String Primitives and Macros Parameters     (Pr  Symbols 2 - 1
 
 
@@ -934,7 +913,7 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000401 Para	  Public  'DATA'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 000003A5 Para	  Public  'DATA'	
 _TEXT  . . . . . . . . . . . . .	32 Bit	 00000294 Para	  Public  'CODE'	
 
 
@@ -1289,18 +1268,18 @@ WriteConsole . . . . . . . . . .	Text   	 WriteConsoleA
 black  . . . . . . . . . . . . .	Number	 00000000h   
 blue . . . . . . . . . . . . . .	Number	 00000001h   
 brown  . . . . . . . . . . . . .	Number	 00000006h   
-bytesRead  . . . . . . . . . . .	DWord	 000002AF _DATA	
-commaSpace . . . . . . . . . . .	Byte	 00000390 _DATA	
+bytesRead  . . . . . . . . . . .	DWord	 00000253 _DATA	
+commaSpace . . . . . . . . . . .	Byte	 00000334 _DATA	
 cyan . . . . . . . . . . . . . .	Number	 00000003h   
-enterPromptInt . . . . . . . . .	Byte	 000002D1 _DATA	
-enterPromptReal  . . . . . . . .	Byte	 000002F5 _DATA	
-errorPrompt  . . . . . . . . . .	Byte	 0000031C _DATA	
+enterPromptInt . . . . . . . . .	Byte	 00000275 _DATA	
+enterPromptReal  . . . . . . . .	Byte	 00000299 _DATA	
+errorPrompt  . . . . . . . . . .	Byte	 000002C0 _DATA	
 exit . . . . . . . . . . . . . .	Text   	 INVOKE ExitProcess,0
 extraCredit  . . . . . . . . . .	Byte	 00000041 _DATA	
-goodBye  . . . . . . . . . . . .	Byte	 000003CD _DATA	
+goodBye  . . . . . . . . . . . .	Byte	 00000371 _DATA	
 gray . . . . . . . . . . . . . .	Number	 00000008h   
 green  . . . . . . . . . . . . .	Number	 00000002h   
-instructionsInt  . . . . . . . .	Byte	 000000F3 _DATA	
+instructionsInt  . . . . . . . .	Byte	 00000097 _DATA	
 intro  . . . . . . . . . . . . .	Byte	 00000000 _DATA	
 lightBlue  . . . . . . . . . . .	Number	 00000009h   
 lightCyan  . . . . . . . . . . .	Number	 0000000Bh   
@@ -1309,18 +1288,18 @@ lightGreen . . . . . . . . . . .	Number	 0000000Ah
 lightMagenta . . . . . . . . . .	Number	 0000000Dh   
 lightRed . . . . . . . . . . . .	Number	 0000000Ch   
 magenta  . . . . . . . . . . . .	Number	 00000005h   
-numberCountText  . . . . . . . .	Byte	 000002BB _DATA	
-numberCount  . . . . . . . . . .	DWord	 000002B3 _DATA	
-readValueFloat . . . . . . . . .	DWord	 00000287 _DATA	
-readValueInt . . . . . . . . . .	DWord	 0000025F _DATA	
-real4String  . . . . . . . . . .	Byte	 0000022C _DATA	
+numberCountText  . . . . . . . .	Byte	 0000025F _DATA	
+numberCount  . . . . . . . . . .	DWord	 00000257 _DATA	
+readValueFloat . . . . . . . . .	DWord	 0000022B _DATA	
+readValueInt . . . . . . . . . .	DWord	 00000203 _DATA	
+real4String  . . . . . . . . . .	Byte	 000001D0 _DATA	
 red  . . . . . . . . . . . . . .	Number	 00000004h   
-sdwordString . . . . . . . . . .	Byte	 000001F9 _DATA	
-subTotalText . . . . . . . . . .	Byte	 000002C3 _DATA	
-subTotal . . . . . . . . . . . .	DWord	 000002B7 _DATA	
-textAvg  . . . . . . . . . . . .	Byte	 000003AE _DATA	
-textEnterVals  . . . . . . . . .	Byte	 00000374 _DATA	
-textSum  . . . . . . . . . . . .	Byte	 00000393 _DATA	
+sdwordString . . . . . . . . . .	Byte	 0000019D _DATA	
+subTotalText . . . . . . . . . .	Byte	 00000267 _DATA	
+subTotal . . . . . . . . . . . .	DWord	 0000025B _DATA	
+textAvg  . . . . . . . . . . . .	Byte	 00000352 _DATA	
+textEnterVals  . . . . . . . . .	Byte	 00000318 _DATA	
+textSum  . . . . . . . . . . . .	Byte	 00000337 _DATA	
 white  . . . . . . . . . . . . .	Number	 0000000Fh   
 wsprintf . . . . . . . . . . . .	Text   	 wsprintfA
 yellow . . . . . . . . . . . . .	Number	 0000000Eh   
